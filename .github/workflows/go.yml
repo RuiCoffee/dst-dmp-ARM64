@@ -1,0 +1,58 @@
+name: Release DMP-ARM64
+
+on:
+  push:
+    tags: [ "v*" ]
+
+env:
+  # 在这里统一配置你的文件名
+  ASSET_NAME: "dmp-linux-arm64.tgz"
+
+jobs:
+  build-binary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+
+      - name: Build and Package
+        env:
+          GOOS: linux
+          GOARCH: arm64
+          CGO_ENABLED: 0
+        run: |
+          # 1. 编译 (将原先的 d-mp 修改为 dmp-arm)
+          go build -ldflags '-s -w' -v -o dmp-arm main.go
+          
+          # 2. 检测文件名配置逻辑
+          if [[ -z "${{ env.ASSET_NAME }}" ]]; then
+            echo "错误: ASSET_NAME 变量未设置。"
+            exit 1
+          fi
+          
+          # 3. 按照你设置的 ASSET_NAME 进行打包 (将原先打包的 d-mp 修改为 dmp-arm)
+          echo "正在打包为: ${{ env.ASSET_NAME }}"
+          tar zcf ${{ env.ASSET_NAME }} dmp-arm
+          
+          # 4. 验证打包后的文件是否存在
+          if [ -f "${{ env.ASSET_NAME }}" ]; then
+            echo "打包验证成功: ${{ env.ASSET_NAME }} 已生成。"
+          else
+            echo "错误: 打包失败，未找到文件 ${{ env.ASSET_NAME }}"
+            exit 1
+          fi
+
+      - name: Release to GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          # 使用变量动态指向文件
+          files: ${{ env.ASSET_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 ### [中文文档] | [[README](docs/README.md)]
 
-curl -fL -O https://raw.githubusercontent.com/RuiCoffee/DMP-ARM64/main/install.sh && chmod +x install.sh && ./install.sh
+一键安装脚本："curl -fL -O https://raw.githubusercontent.com/RuiCoffee/DMP-ARM64/main/install.sh && chmod +x install.sh && ./install.sh"
 
 
 # DMP 饥荒管理平台

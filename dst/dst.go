@@ -76,13 +76,8 @@ func (g *Game) ConsoleCmd(cmd string, worldID int) error {
 	return g.consoleCmd(cmd, worldID)
 }
 
-// SessionInfo 获取存档信息（天数/阶段/季节等）。
-// 优先尝试实时查询（向游戏控制台注入一行 print，读取输出，耗时毫秒级，几乎无额外资源开销，
-// 不受自动存档间隔影响）；若世界未运行或查询失败，则回退为读取最近一次存档的 meta 文件。
+// SessionInfo 获取存档信息
 func (g *Game) SessionInfo() *RoomSessionInfo {
-	if info, err := g.liveSessionInfo(); err == nil {
-		return info
-	}
 	return g.sessionInfo()
 }
 
